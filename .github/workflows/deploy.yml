@@ -1,16 +1,19 @@
 name: Deploy to GitHub Pages
 
 on:
+  # Akan dijalankan setiap kali ada perubahan di branch main
   push:
-    branches: ['main'] # Ganti 'main' menjadi 'master' jika branch utama Anda bernama master
+    branches: ["main"] 
+  workflow_dispatch:
 
+# Memberikan akses agar bot GitHub bisa mengunggah website
 permissions:
   contents: read
   pages: write
   id-token: write
 
 concurrency:
-  group: 'pages'
+  group: "pages"
   cancel-in-progress: true
 
 jobs:
@@ -20,23 +23,30 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
-      - name: Setup Node
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
-      - name: Install dependencies
+
+      - name: Install Dependencies
         run: npm install
-      - name: Build
+
+      - name: Build Project
         run: npm run build
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      - name: Upload artifact
+
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # Mengupload hasil build yang berada di folder dist/
           path: './dist'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
